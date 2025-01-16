@@ -1,0 +1,22 @@
+This is to announce that starting [XX January], Single Sign-On (SSO) will be enabled for our GitHub Enterprise account. This change aims to enhance security and streamline access to our GitHub repositories.
+
+Effective Date: [XX January]
+New GitHub SSO Login URL: [Insert SSO URL here]
+
+Once SSO is enabled, all Somatus users will need to authenticate via the designated SSO platform to access GitHub. Direct GitHub login using credentials will also be supported as we right now we are not enforcing the SSO.
+
+Steps to Access GitHub After SSO Is Enabled
+Visit the SSO Login URL:
+Go to [Insert SSO URL here].
+
+Log in Using Your Enterprise Credentials:
+
+Enter your enterprise username and password.
+Complete any additional authentication steps if multi-factor authentication (MFA) is required.
+Authorize Your Account on GitHub:
+
+Access GitHub as Usual:
+Once authenticated, you can access all repositories and GitHub services associated with your enterprise account.
+
+Need Assistance?
+If you encounter any issues during the transition, please reach out to our IT support team at [Insert Support Email or Helpdesk Link].
