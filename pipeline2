@@ -1,0 +1,58 @@
+#!/bin/bash
+GITHUB_API_URL="https://api.github.com"
+ORG_NAME="inc"
+OUTPUT_FILE="org_user_access.csv"
+
+# Check if jq is installed
+if ! command -v jq &>/dev/null; then
+    echo "Error: jq is not installed. Please install jq and try again."
+    exit 1
+fi
+
+# Initialize the CSV file
+echo "Repository,Username,Access Level" > "$OUTPUT_FILE"
+
+# Function to fetch repositories for the organization
+fetch_repos() {
+    curl -s -H "Authorization: token ${TOKEN}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "${GITHUB_API_URL}/orgs/${ORG_NAME}/repos?per_page=100&page=$1"
+}
+
+# Function to fetch collaborators for a repository
+fetch_collaborators() {
+    curl -s -H "Authorization: token ${TOKEN}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "${GITHUB_API_URL}/repos/${ORG_NAME}/$1/collaborators"
+}
+
+# Paginate through all repositories
+page=1
+while true; do
+    repos=$(fetch_repos "$page")
+    repo_count=$(echo "$repos" | jq '. | length')
+
+    # Break the loop if no more repositories
+    if [ "$repo_count" -eq 0 ]; then
+        break
+    fi
+
+    # Process each repository
+    echo "$repos" | jq -r '.[].name' | while read -r repo; do
+        echo "Processing repository: $repo"
+
+        # Fetch collaborators for the current repository
+        collaborators=$(fetch_collaborators "$repo")
+
+        # Append collaborators to the CSV file
+        echo "$collaborators" | jq -r \
+            --arg repo "$repo" \
+            '.[] | "\($repo),\(.login),\(.permissions | to_entries[] | select(.value == true) | .key)"' \
+            >> "$OUTPUT_FILE"
+    done
+
+    # Increment the page number
+    page=$((page + 1))
+done
+
+echo "Access report generated: $OUTPUT_FILE"
